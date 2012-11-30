@@ -17,6 +17,7 @@ exports.list = function(req, res) {
         skip = parseInt(req.query.skip),
         take = parseInt(req.query.take),
         page = parseInt(req.query.page),
+        callback = req.query.callback,
         users = []
 
     for (var num = skip; num < skip + take; num++) {
@@ -24,9 +25,9 @@ exports.list = function(req, res) {
             { id: num, country: randCountry(), name: randName() }
         );
     };
-    res.send(JSON.stringify({
+    res.send(callback+'('+JSON.stringify({
         results: users,
         total: 100000000,
         page: page
-    }));
+    })+');');
 };

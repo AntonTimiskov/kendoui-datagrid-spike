@@ -1,13 +1,13 @@
 $(function(){
     var id = '#grid';
     window.source = new kendo.data.DataSource({
-        type: "json",
+        type: "jsonp",
         serverPaging: true,
-        pageSize: 10000,
+        pageSize: 100,
         transport: {
             read: {
                 url: "/users",
-                dataType: "json"
+                dataType: "jsonp"
             }
         },
         schema: {
