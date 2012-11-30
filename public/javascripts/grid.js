@@ -3,9 +3,7 @@ $(function(){
     window.source = new kendo.data.DataSource({
         type: "json",
         serverPaging: true,
-        //serverSorting: true,
-        //serverFiltering: true,
-        pageSize: 10,
+        pageSize: 10000,
         transport: {
             read: {
                 url: "/users",
@@ -20,11 +18,15 @@ $(function(){
     });
     $(id).kendoGrid({
         dataSource: source,
-        height: 300,
-        scrollable: {
-            virtual: true
+        //height: 300,
+        scrollable: false,
+        pageable: {
+            previousNext: true,
+            imput: true
         },
-        //sortable: true,
+        //scrollable: {
+        //    virtual: true
+        //},
         selectable: true,
         columns: [
             { field: 'id', title: 'ID', width: 100 },
