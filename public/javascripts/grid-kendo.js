@@ -19,6 +19,7 @@ $(function(){
             page: 'page',
             model: {
                 fields: {
+                    'ROW_ID': { type: 'number' },
                     'File_name': { type: 'string' },
                     'Location': { type: 'string' },
                     'Current_size': { type: 'number' },
@@ -39,7 +40,7 @@ $(function(){
                         }
                     })
                 })
-                console.log(response)
+                //console.log(response)
                 return response
             }
         },
@@ -51,7 +52,7 @@ $(function(){
     $(id).kendoGrid({
         dataSource: source,
         scrollable: false,
-
+        width: '100%',
         pageable: {
             previousNext: true,
             input: true
@@ -62,6 +63,7 @@ $(function(){
             extra: false
         },
         columns: [
+            { field: 'ROW_ID', title: 'N' },
             { field: 'File_name', title: 'File name' },
             { field: 'Location', title: 'Location' },
             { field: 'Current_size', title: 'Size' },
