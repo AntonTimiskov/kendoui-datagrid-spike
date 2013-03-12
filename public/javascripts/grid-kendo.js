@@ -9,8 +9,8 @@ $(function(){
             read: {
                 //url: "/users",
                 //dataType: "jsonp"
-                url: "http://10.30.45.35:3141/docs",
-                dataType: "jsonp"
+                url: "/items",
+                dataType: "json"
             }
         },
         schema: {
