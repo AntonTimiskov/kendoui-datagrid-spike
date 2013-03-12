@@ -1,6 +1,13 @@
 exports.get = function(req, res) {
 
     url = 'http://dallas:3141'+req.url.replace('/items', '/docs')
+
+    /* extjs support */
+
+    url = url
+            .replace('start=', 'skip=')
+            .replace('limit=', 'take=')
+
     console.log(url)
     res.setHeader( 'Content-Type', 'text/html' )
     spawn = require('child_process').spawn
