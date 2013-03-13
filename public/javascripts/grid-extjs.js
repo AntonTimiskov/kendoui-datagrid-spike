@@ -6,6 +6,7 @@ Ext.require([
 ]);
 
 Ext.onReady(function(){
+    Ext.Ajax.timeout = 360 * 000;
     var id = 'grid';
     Ext.define('Docs', {
         extend: 'Ext.data.Model',
@@ -57,7 +58,7 @@ Ext.onReady(function(){
         remoteGroup: true,
         // allow the grid to interact with the paging scroller by buffering
         buffered: true,
-        leadingBufferZone: 300,
+        leadingBufferZone: 100,
         pageSize: 100,
         proxy: {
             // load using script tags for cross domain, if the data in on the same domain as
@@ -70,13 +71,13 @@ Ext.onReady(function(){
                 totalProperty: 'total'
             },
             // sends single sort as multi parameter
-            simpleSortMode: true,
+            simpleSortMode: false,
             // sends single group as multi parameter
-            simpleGroupMode: true,
+            simpleGroupMode: false,
 
             // This particular service cannot sort on more than one field, so grouping === sorting.
-            groupParam: 'sort',
-            groupDirectionParam: 'dir'
+            //groupParam: 'sort',
+            //groupDirectionParam: 'dir'
         },
         autoLoad: true
     });
@@ -84,7 +85,7 @@ Ext.onReady(function(){
     var grid = Ext.create('Ext.grid.Panel', {
         width: 700,
         height: 500,
-        collapsible: true,
+        collapsible: false,
         title: 'Documents and pages',
         store: store,
         loadMask: true,

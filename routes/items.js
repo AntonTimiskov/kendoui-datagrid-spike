@@ -20,7 +20,7 @@ exports.get = function(req, res) {
         //console.log('stderr: ' + err)
     })
     proc.on( 'close', function(){
-        console.log('close')
+        //console.log('close')
         res.end()
     })
 };

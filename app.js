@@ -32,6 +32,7 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/kendo', routes.kendo);
+app.get('/kendo-scroll', routes.kendo_scroll);
 app.get('/extjs', routes.extjs);
 app.get('/items', items.get);
 
