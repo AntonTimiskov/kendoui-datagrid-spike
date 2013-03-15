@@ -52,7 +52,8 @@ $(function(){
     $(id).kendoGrid({
         dataSource: source,
         scrollable: false,
-        width: '100%',
+        width: 800,
+        height: 700,
         pageable: {
             previousNext: true,
             input: true

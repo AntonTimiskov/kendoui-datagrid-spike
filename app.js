@@ -34,6 +34,7 @@ app.get('/', routes.index);
 app.get('/kendo', routes.kendo);
 app.get('/kendo-scroll', routes.kendo_scroll);
 app.get('/extjs', routes.extjs);
+app.get('/datatables', routes.datatables);
 app.get('/items', items.get);
 
 

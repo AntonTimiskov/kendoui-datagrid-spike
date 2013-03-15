@@ -18,3 +18,9 @@ exports.kendo_scroll = function(req, res){
 exports.extjs = function(req, res){
   res.render('extjs', { title: 'ExtJS Grid' });
 };
+
+exports.datatables = function(req, res){
+  res.render('datatables', { title: 'Datatables Grid' });
+};
+
+

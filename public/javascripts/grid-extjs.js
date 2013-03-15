@@ -1,8 +1,8 @@
 Ext.require([
     'Ext.grid.*',
     'Ext.data.*',
-    'Ext.util.*',
-    'Ext.grid.PagingScroller'
+    'Ext.util.*'//,
+    //'Ext.grid.PagingScroller'
 ]);
 
 Ext.onReady(function(){
@@ -54,6 +54,7 @@ Ext.onReady(function(){
     // create the Data Store
     var store = Ext.create('Ext.data.Store', {
         id: 'store',
+        buffered: true,
         model: 'Docs',
         remoteGroup: true,
         // allow the grid to interact with the paging scroller by buffering
@@ -89,6 +90,7 @@ Ext.onReady(function(){
         title: 'Documents and pages',
         store: store,
         loadMask: true,
+        plugins: 'bufferedrenderer',
         selModel: {
             pruneRemoved: false
         },
