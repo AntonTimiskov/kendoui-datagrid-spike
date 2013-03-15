@@ -39,13 +39,13 @@ $(function(){
             start = that._rangeStart || skip,
             take = dataSource.take(),
             total = dataSource.total(),
-            height = that.content.height() // that.verticalScrollbar.children().innerHeight(), // that.element.innerHeight(), // that.content.height(), //
+            height = that.content.height(), // that.verticalScrollbar.children().innerHeight(), // that.element.innerHeight(), // that.content.height(), //
             wrapperElement = that.wrapper[0],
             addScrollBarHeight = (wrapperElement.scrollWidth > wrapperElement.offsetWidth) ? scrollbar : 0,
             isScrollingUp = !!(that._scrollbarTop && that._scrollbarTop > scrollTop),
-            globalHeight = (height-addScrollBarHeight), // * 100,
+            globalHeight = (height-addScrollBarHeight) * 100,
             percent = scrollTop / globalHeight,
-            isLastPage =  ( globalHeight - scrollTop > height )? true : false,
+            isLastPage =  ( globalHeight - scrollTop > height )? false : true,
             firstItemIndex = ( !isLastPage )? parseInt(total * percent) : total - take,
             lastItemIndex = firstItemIndex + take;
 
