@@ -17,18 +17,6 @@ $(function(){
         return ret;
     }
 
-/*
-    scrollable.refresh = function(){
-        var that = this,
-            height = that.content.height(),
-            ret = _refresh.apply(this,arguments),
-            html = that.verticalScrollbar.html();
-        html = '<div class=".k-additional-wrap" style="overflow:hidden;">'+html+'</div>'
-        that.verticalScrollbar.html(html)
-        return ret;
-    }
-*/
-
     scrollable._scroll = function(e){
          console.log('srollable.scroll',this,arguments);
 
@@ -64,7 +52,18 @@ $(function(){
 
         if (!that._fetch(firstItemIndex, lastItemIndex, isScrollingUp)) {
             that.wrapper[0].scrollTop = that._scrollTop;
-        }
+        } 
+        //else {
+        //    $('.k-virtual-scrollable-wrap', grid._that.wrapper[0]).scrollTop(0);
+        //}
+
+        grid._that._skip = firstItemIndex;
+
+        //var fn = (isScrollingUp)? grid._that._fetchMoreUp : grid._that._fetchMoreDown;
+        //fn(firstItemIndex)
+
+        
+
     }
 
     grid._navigatable = function() {
@@ -126,7 +125,6 @@ $(function(){
             isRtl = false,
             QUI = '.QUI';
 
-        console.log(this.current, this)
         window.t = this
         var that = this,
             currentProxy = proxy(that.current, that),
@@ -134,18 +132,21 @@ $(function(){
             headerTable = that.thead.parent(),
             dataTable = table;
 
+        grid._that = that;
+
         if (!that.options.navigatable) {
             return;
         }
 
-        var _scrollToRow = function(element){
-                var wrapperElement = $('.k-virtual-scrollable-wrap',that.wrapper[0]),
+        var _wrapperElement = function() { return $('.k-virtual-scrollable-wrap',that.wrapper[0]) },
+            _scrollToRow = function(element){
+                var wrapperElement = _wrapperElement(),
                     wrapperPosition = wrapperElement.scrollTop(),
                     elementPosition = element.position().top;
                
                 wrapperElement.scrollTop( wrapperPosition + elementPosition );
             },
-            _rows = function(){ return $('.k-virtual-scrollable-wrap tr[role=row]',that.wrapper[0]); }
+            _rows = function(){ return $('tr[role=row]', _wrapperElement()); }
             _currentRow = function(){
                 var rows = _rows();
                 for (var i=0; i<rows.length; i++) {
@@ -157,7 +158,7 @@ $(function(){
             _next = function(elN){ return _rows().eq(elN).next('tr[role=row]') },
             _prev = function(elN){ return _rows().eq(elN).prev('tr[role=row]') },
             _scrolledPercent = function(){
-                var wrapperElement = $('.k-virtual-scrollable-wrap', that.wrapper[0]),
+                var wrapperElement = _wrapperElement(),
                     table = $('> table', wrapperElement),
                     tableHeight = table.height(),
                     wrapperHeight = wrapperElement.height(),
@@ -165,44 +166,53 @@ $(function(){
 
                 return scrollTop / (tableHeight - wrapperHeight);
             },
-            _fetchMoreUp = function(elDelta){
+            _scrolltopReset = function(){
+                _wrapperElement().scrollTop(0); 
+                scrollable._that._scrollTop = 0;
+                scrollable._that._scrollbarTop = 0;
+                scrollable._that.wrapper[0].scrollTop = 0;
+            },
+            _fetchMoreUp = function(delta){
                 var scrolledPercent = _scrolledPercent(),
                     dataSource = that.dataSource,
-                    skip = dataSource.skip(), //that._skip || dataSource.skip(),
+                    skip = that._skip || dataSource.skip(),
                     take = dataSource.take(),
                     next = skip - take;
 
                 if ( skip == 0 ) return;
                 if ( scrollable._fetching ) return;
-                if ( scrolledPercent > 0.7 ) {
-                    console.log('prefetch', next, take);
-                    dataSource.prefetch(next, take);
+                if ( ! dataSource.inRange((skip-parseInt(take/2)>0)?skip-parseInt(take/2):0, take) ) {
+                    console.log('prefetch', ((next>0)?next:0), take);
+                    dataSource.prefetch(((next>0)?next:0), take);
+                
                 };
-                //if ( scrolledPercent < 0.01 ) {
-                    //that._skip = skip+elDelta;
-                    console.log('_page up', skip+elDelta, take);
-                    scrollable._that._page(skip+elDelta, take);
-                //};
-
+                that._skip = skip+delta
+                console.log('_page up', that._skip, take, delta);
+                _scrolltopReset()
+                scrollable._that._page(that._skip, take);
             },
-            _fetchMoreDown = function(elDelta){
+            _fetchMoreDown = function(delta){
                 var scrolledPercent = _scrolledPercent(),
                     dataSource = that.dataSource,
-                    skip = dataSource.skip(), //that._skip || dataSource.skip(),
+                    skip = that._skip || dataSource.skip(),
                     take = dataSource.take(),
                     next = skip + take;
                 
                 if ( scrollable._fetching ) return;
-                if ( scrolledPercent > 0.7 ) {
-                    console.log('prefetch', next, take);
-                    dataSource.prefetch(next, take);
+                if ( ! dataSource.inRange(skip + parseInt(take/2), take) ) {
+                    console.log('prefetch', ((next>0)?next:0), take);
+                    dataSource.prefetch(((next>0)?next:0), take);
                 };
-                //if ( scrolledPercent > 0.99 ) {
-                    //that._skip = skip+elDelta;
-                    console.log('_page down', skip+elDelta, take);
-                    scrollable._that._page(skip+elDelta, take);
-                //};
+                that._skip = skip+delta
+                console.log('_page down', that._skip, take, delta);
+                _scrolltopReset()
+                scrollable._that._page(that._skip, take);
             }; 
+
+        that._fetchMoreDown = _fetchMoreDown;
+        that._fetchMoreUp = _fetchMoreUp;
+        that._currentRow = _currentRow;
+        window._wrapperElement = _wrapperElement;
 
         dataTable
             .on("keydown" + QUI, function(e) {
@@ -230,14 +240,14 @@ $(function(){
                    var currentRow = _currentRow()//,
                        //nextRow = _next(currentRow);
                     //nextRow.length && _scrollToRow(nextRow);
-                    _fetchMoreDown(currentRow+1);
+                    _fetchMoreDown(+1);
                 }
 
                 if ( canHandle && key == keys.UP ) {
                    var currentRow = _currentRow()//,
                     //   prevRow = _prev(currentRow);
                     //prevRow.length && _scrollToRow(prevRow);
-                    _fetchMoreUp(currentRow-1);
+                    _fetchMoreUp(-1);
                 }
 
                 handled = true;
