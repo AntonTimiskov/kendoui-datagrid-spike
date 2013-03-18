@@ -61,10 +61,31 @@ $(function(){
 
         //var fn = (isScrollingUp)? grid._that._fetchMoreUp : grid._that._fetchMoreDown;
         //fn(firstItemIndex)
-
-        
-
     }
+
+    scrollable._wheelScroll = function(e) {
+            var that = this,
+                scrollTop = that.verticalScrollbar.scrollTop(),
+                originalEvent = e.originalEvent,
+                deltaY = originalEvent.wheelDeltaY,
+                delta;
+
+            console.log('_wheelScroll', e, delta)
+            if (originalEvent.wheelDelta) { // Webkit and IE
+                if (deltaY === undefined || deltaY) { // IE does not have deltaY, thus always scroll (horizontal scrolling is treated as vertical)
+                    delta = originalEvent.wheelDelta;
+                }
+            } else if (originalEvent.detail && originalEvent.axis === originalEvent.VERTICAL_AXIS) { // Firefox and Opera
+                delta = (-originalEvent.detail) * 10;
+            }
+
+            if (delta) {
+                e.preventDefault();
+                //that.verticalScrollbar.scrollTop(scrollTop + (-delta));
+                fn = (delta<0)? grid._that._fetchMoreDown : grid._that._fetchMoreUp ;
+                fn( (delta<0)?1:-1 )
+            }
+        },
 
     grid._navigatable = function() {
         var kendo = window.kendo,
