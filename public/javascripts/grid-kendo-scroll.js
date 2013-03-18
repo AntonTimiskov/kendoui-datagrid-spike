@@ -11,6 +11,7 @@ $(function(){
             height = that.content.height(),
             ret = _refresh.apply(this,arguments),
             html = '';
+        scrollable._that = that;
         for (var i=0;i<100;i++){ html = html + '<div style="width:1px;height:' + height + 'px"></div>' };
         that.verticalScrollbar.html(html)
         return ret;
@@ -27,6 +28,7 @@ $(function(){
         return ret;
     }
 */
+
     scrollable._scroll = function(e){
          console.log('srollable.scroll',this,arguments);
 
@@ -47,7 +49,8 @@ $(function(){
             percent = scrollTop / globalHeight,
             isLastPage =  ( globalHeight - scrollTop > height )? false : true,
             firstItemIndex = ( !isLastPage )? parseInt(total * percent) : total - take,
-            lastItemIndex = firstItemIndex + take;
+            lastItemIndex = firstItemIndex + take,
+            start = firstItemIndex;
 
         console.log('scrollTop', scrollTop, isLastPage)
         console.log('globalHeight', globalHeight)
@@ -56,14 +59,14 @@ $(function(){
         console.log('lastItemIndex', lastItemIndex)
 
         //console.log('total', total)
-        that._scrollTop = scrollTop - (start * rowHeight);
+        that._scrollTop = scrollTop
         that._scrollbarTop = scrollTop;
 
         if (!that._fetch(firstItemIndex, lastItemIndex, isScrollingUp)) {
             that.wrapper[0].scrollTop = that._scrollTop;
         }
     }
-/*
+
     grid._navigatable = function() {
         var kendo = window.kendo,
             $ = kendo.jQuery,
@@ -135,6 +138,72 @@ $(function(){
             return;
         }
 
+        var _scrollToRow = function(element){
+                var wrapperElement = $('.k-virtual-scrollable-wrap',that.wrapper[0]),
+                    wrapperPosition = wrapperElement.scrollTop(),
+                    elementPosition = element.position().top;
+               
+                wrapperElement.scrollTop( wrapperPosition + elementPosition );
+            },
+            _rows = function(){ return $('.k-virtual-scrollable-wrap tr[role=row]',that.wrapper[0]); }
+            _currentRow = function(){
+                var rows = _rows();
+                for (var i=0; i<rows.length; i++) {
+                    if (rows.eq(i).position().top >= 0) {
+                        return i;
+                    }
+                }
+            },
+            _next = function(elN){ return _rows().eq(elN).next('tr[role=row]') },
+            _prev = function(elN){ return _rows().eq(elN).prev('tr[role=row]') },
+            _scrolledPercent = function(){
+                var wrapperElement = $('.k-virtual-scrollable-wrap', that.wrapper[0]),
+                    table = $('> table', wrapperElement),
+                    tableHeight = table.height(),
+                    wrapperHeight = wrapperElement.height(),
+                    scrollTop = wrapperElement.scrollTop();
+
+                return scrollTop / (tableHeight - wrapperHeight);
+            },
+            _fetchMoreUp = function(elDelta){
+                var scrolledPercent = _scrolledPercent(),
+                    dataSource = that.dataSource,
+                    skip = dataSource.skip(), //that._skip || dataSource.skip(),
+                    take = dataSource.take(),
+                    next = skip - take;
+
+                if ( skip == 0 ) return;
+                if ( scrollable._fetching ) return;
+                if ( scrolledPercent > 0.7 ) {
+                    console.log('prefetch', next, take);
+                    dataSource.prefetch(next, take);
+                };
+                //if ( scrolledPercent < 0.01 ) {
+                    //that._skip = skip+elDelta;
+                    console.log('_page up', skip+elDelta, take);
+                    scrollable._that._page(skip+elDelta, take);
+                //};
+
+            },
+            _fetchMoreDown = function(elDelta){
+                var scrolledPercent = _scrolledPercent(),
+                    dataSource = that.dataSource,
+                    skip = dataSource.skip(), //that._skip || dataSource.skip(),
+                    take = dataSource.take(),
+                    next = skip + take;
+                
+                if ( scrollable._fetching ) return;
+                if ( scrolledPercent > 0.7 ) {
+                    console.log('prefetch', next, take);
+                    dataSource.prefetch(next, take);
+                };
+                //if ( scrolledPercent > 0.99 ) {
+                    //that._skip = skip+elDelta;
+                    console.log('_page down', skip+elDelta, take);
+                    scrollable._that._page(skip+elDelta, take);
+                //};
+            }; 
+
         dataTable
             .on("keydown" + QUI, function(e) {
                 var key = e.keyCode,
@@ -148,16 +217,28 @@ $(function(){
                     index,
                     shiftKey = e.shiftKey,
                     browser = kendo.support.browser,
-                    current = currentProxy();
-                
+                    current = currentProxy(),
+                    currentTop = that._rangeStart || dataSource.skip() || null;
+               
                 if (current && current.is("th")) {
                     console.log('call original')
                     return;
                 }
-                console.log( 'keydown', key , $('.k-grid tr').eq(7))
+                //console.log( 'keydown', key )
 
-                current = $('.k-grid tr').eq(7)
-                currentProxy(current)
+                if ( canHandle && key == keys.DOWN ) {
+                   var currentRow = _currentRow()//,
+                       //nextRow = _next(currentRow);
+                    //nextRow.length && _scrollToRow(nextRow);
+                    _fetchMoreDown(currentRow+1);
+                }
+
+                if ( canHandle && key == keys.UP ) {
+                   var currentRow = _currentRow()//,
+                    //   prevRow = _prev(currentRow);
+                    //prevRow.length && _scrollToRow(prevRow);
+                    _fetchMoreUp(currentRow-1);
+                }
 
                 handled = true;
 
@@ -171,7 +252,7 @@ $(function(){
 
         _navigatable.apply(that, arguments);
     };
-*/
+
     var id = '#grid';
     window.source = new kendo.data.DataSource({
         type: "jsonp",
