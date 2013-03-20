@@ -1,20 +1,21 @@
 $(function(){
+
     var id = '#grid';
     window.source = new kendo.data.DataSource({
         type: "jsonp",
+        serverGrouping: true,
         serverPaging: true,
         serverSorting: true,
         pageSize: 100,
         transport: {
             read: {
-                //url: "/users",
-                //dataType: "jsonp"
-                url: "http://socrat:3141/docs",
+                url: "http://socrat:3141/docs?max="+window.n.toString(),
                 dataType: "jsonp"
             }
         },
         schema: {
             data: 'results',
+            aggregates: 'results',
             total: 'total',
             page: 'page',
             model: {
@@ -43,6 +44,7 @@ $(function(){
                 //console.log(response)
                 return response
             }
+            
         },
         serverPaging: true,
         serverFiltering: true,
@@ -51,15 +53,15 @@ $(function(){
     });
     $(id).kendoGrid({
         dataSource: source,
-        scrollable: false,
-        width: 800,
-        height: 700,
-        pageable: {
-            previousNext: true,
-            input: true
+        scrollable: {
+            virtual: true
         },
+        height: 700,
+        width: 800,
         selectable: true,
+        navigatable: true,
         sortable: true,
+        groupable: true,
         filterable: {
             extra: false
         },

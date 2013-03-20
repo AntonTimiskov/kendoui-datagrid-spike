@@ -18,7 +18,7 @@ $(function(){
     }
 
     scrollable._scroll = function(e){
-         console.log('srollable.scroll',this,arguments);
+         //console.log('srollable.scroll',this,arguments);
 
          var that = this,
             math = Math,
@@ -40,27 +40,37 @@ $(function(){
             lastItemIndex = firstItemIndex + take,
             start = firstItemIndex;
 
-        console.log('scrollTop', scrollTop, isLastPage)
+        /*console.log('scrollTop', scrollTop, isLastPage)
         console.log('globalHeight', globalHeight)
         console.log('percent', percent)
         console.log('firstItemIndex', firstItemIndex)
-        console.log('lastItemIndex', lastItemIndex)
+        console.log('lastItemIndex', lastItemIndex)*/
 
         //console.log('total', total)
         that._scrollTop = scrollTop
         that._scrollbarTop = scrollTop;
 
         if (!that._fetch(firstItemIndex, lastItemIndex, isScrollingUp)) {
-            that.wrapper[0].scrollTop = that._scrollTop;
+            //that.wrapper[0].scrollTop = that._scrollTop;
         } 
-        //else {
-        //    $('.k-virtual-scrollable-wrap', grid._that.wrapper[0]).scrollTop(0);
-        //}
 
         grid._that._skip = firstItemIndex;
 
-        //var fn = (isScrollingUp)? grid._that._fetchMoreUp : grid._that._fetchMoreDown;
-        //fn(firstItemIndex)
+
+        if ( isLastPage ) {
+            console.log('LastPage')
+            console.log(dataSource, $.data(dataSource,'events'))
+            var handler = function(){
+                console.log('CHANGE')
+                dataSource.unbind('change', handler);
+                grid._that._wrapperElement().scrollTop( height )
+                console.log('a',grid._that._skip)
+                //grid._that._skip = firstItemIndex + grid._that._currentRow() 
+                
+                console.log(grid._that._skip)
+            };
+            dataSource.bind('change', handler);
+        }
     }
 
     scrollable._wheelScroll = function(e) {
@@ -191,7 +201,7 @@ $(function(){
                 _wrapperElement().scrollTop(0); 
                 scrollable._that._scrollTop = 0;
                 scrollable._that._scrollbarTop = 0;
-                scrollable._that.wrapper[0].scrollTop = 0;
+                //scrollable._that.wrapper[0].scrollTop = 0;
             },
             _fetchMoreUp = function(delta){
                 var scrolledPercent = _scrolledPercent(),
@@ -207,7 +217,7 @@ $(function(){
                     dataSource.prefetch(((next>0)?next:0), take);
                 
                 };
-                that._skip = skip+delta
+                that._skip = (skip+delta>0)? skip+delta : 0;
                 console.log('_page up', that._skip, take, delta);
                 _scrolltopReset()
                 scrollable._that._page(that._skip, take);
@@ -233,7 +243,7 @@ $(function(){
         that._fetchMoreDown = _fetchMoreDown;
         that._fetchMoreUp = _fetchMoreUp;
         that._currentRow = _currentRow;
-        window._wrapperElement = _wrapperElement;
+        that._wrapperElement = _wrapperElement;
 
         dataTable
             .on("keydown" + QUI, function(e) {
@@ -258,18 +268,33 @@ $(function(){
                 //console.log( 'keydown', key )
 
                 if ( canHandle && key == keys.DOWN ) {
-                   var currentRow = _currentRow()//,
+                   //var currentRow = _currentRow()//,
                        //nextRow = _next(currentRow);
                     //nextRow.length && _scrollToRow(nextRow);
                     _fetchMoreDown(+1);
                 }
 
                 if ( canHandle && key == keys.UP ) {
-                   var currentRow = _currentRow()//,
+                   //var currentRow = _currentRow()//,
                     //   prevRow = _prev(currentRow);
                     //prevRow.length && _scrollToRow(prevRow);
                     _fetchMoreUp(-1);
                 }
+
+                if ( canHandle && key == keys.PAGEDOWN ) {
+                   //var currentRow = _currentRow()//,
+                       //nextRow = _next(currentRow);
+                    //nextRow.length && _scrollToRow(nextRow);
+                    _fetchMoreDown(+10);
+                }
+
+                if ( canHandle && key == keys.PAGEUP ) {
+                   //var currentRow = _currentRow()//,
+                    //   prevRow = _prev(currentRow);
+                    //prevRow.length && _scrollToRow(prevRow);
+                    _fetchMoreUp(-10);
+                }
+
 
                 handled = true;
 

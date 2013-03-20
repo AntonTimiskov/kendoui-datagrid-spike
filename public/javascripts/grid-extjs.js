@@ -91,6 +91,7 @@ Ext.onReady(function(){
         store: store,
         loadMask: true,
         plugins: 'bufferedrenderer',
+        'font-size': '40px',
         selModel: {
             pruneRemoved: false
         },
