@@ -5,7 +5,6 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , items = require('./routes/items')
   , http = require('http')
   , path = require('path');
 
@@ -31,13 +30,8 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-//app.get('/kendo', routes.kendo);
-//app.get('/kendo-scroll', routes.kendo_scroll);
 app.get('/kendo-scroll/:max', routes.kendo_scroll_n);
-//app.get('/extjs', routes.extjs);
-//app.get('/datatables', routes.datatables);
-//app.get('/items', items.get);
-
+app.get('/kendo-scroll/:max/data', routes.data_n);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

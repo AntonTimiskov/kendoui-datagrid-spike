@@ -1,5 +1,4 @@
 $(function(){
-    window.mocks.gridMockGenerator();
     var id = '#grid';
     window.source = new kendo.data.DataSource({
         type: "odata",
