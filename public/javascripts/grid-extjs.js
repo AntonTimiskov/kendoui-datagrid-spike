@@ -1,8 +1,9 @@
 Ext.require([
     'Ext.grid.*',
     'Ext.data.*',
-    'Ext.util.*'//,
-    //'Ext.grid.PagingScroller'
+    'Ext.util.*'
+    //, 'Ext.grid.PagingScroller'
+    ,'Ext.grid.plugin.BufferedRenderer'
 ]);
 
 Ext.onReady(function(){
@@ -58,7 +59,6 @@ Ext.onReady(function(){
         model: 'Docs',
         remoteGroup: true,
         // allow the grid to interact with the paging scroller by buffering
-        buffered: true,
         leadingBufferZone: 100,
         pageSize: 100,
         proxy: {
