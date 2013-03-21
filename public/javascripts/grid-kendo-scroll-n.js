@@ -1,16 +1,16 @@
 $(function(){
-
+    window.mocks.gridMockGenerator();
     var id = '#grid';
     window.source = new kendo.data.DataSource({
-        type: "jsonp",
+        type: "odata",
         serverGrouping: true,
         serverPaging: true,
         serverSorting: true,
         pageSize: 100,
         transport: {
             read: {
-                url: "http://socrat:3141/docs?max="+window.n.toString(),
-                dataType: "jsonp"
+                url: window.location+'/data',
+                dataType: "json"
             }
         },
         schema: {
@@ -41,7 +41,6 @@ $(function(){
                         }
                     })
                 })
-                //console.log(response)
                 return response
             }
             

@@ -31,12 +31,12 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/kendo', routes.kendo);
-app.get('/kendo-scroll', routes.kendo_scroll);
+//app.get('/kendo', routes.kendo);
+//app.get('/kendo-scroll', routes.kendo_scroll);
 app.get('/kendo-scroll/:max', routes.kendo_scroll_n);
-app.get('/extjs', routes.extjs);
-app.get('/datatables', routes.datatables);
-app.get('/items', items.get);
+//app.get('/extjs', routes.extjs);
+//app.get('/datatables', routes.datatables);
+//app.get('/items', items.get);
 
 
 http.createServer(app).listen(app.get('port'), function(){
